@@ -1,12 +1,14 @@
 package tw.edu.pu.csim.sandy.basicui0226
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +17,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -22,7 +25,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -52,6 +60,7 @@ class MainActivity : ComponentActivity() {
                     )
 
                 }
+                Toast.makeText(this,"作者:曾禹嫙", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -108,13 +117,13 @@ fun ColumnExample(modifier: Modifier = Modifier) {
         Text( msg )
 
         Spacer(modifier = Modifier.height(8.dp))
-        TextFieldExample(modifier)
+        RowExample(modifier)
 
     }
 }
 
 @Composable
-fun TextFieldExample(modifier: Modifier = Modifier) {
+fun RowExample(modifier: Modifier = Modifier) {
     Row {
         Image(
             painter = painterResource(id = R.drawable.android),
@@ -126,7 +135,7 @@ fun TextFieldExample(modifier: Modifier = Modifier) {
             alpha = 0.6f,
         )
 
-        Spacer(modifier = Modifier.width(20.dp))
+        Spacer(modifier = modifier.width(20.dp))
 
         Image(
             painter = painterResource(id = R.drawable.compose),
@@ -135,6 +144,32 @@ fun TextFieldExample(modifier: Modifier = Modifier) {
         )
     }
 }
+@Composable
+fun TextFieldExample(modifier: Modifier = Modifier) {
+    // 管理輸入框的文字狀態
+    var inputText by remember { mutableStateOf("") }
+
+    Column(
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Bottom
+    ) {
+        OutlinedTextField(
+            value = inputText,
+            onValueChange = { inputText = it },
+            label = { Text("請輸入文字") },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth(0.8f)
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = if (inputText.isBlank()) "尚未輸入內容" else "您輸入的是：$inputText"
+        )
+    }
+}
+
 data class Animal(
     val name: String,
     @DrawableRes val imageRes: Int
@@ -142,6 +177,7 @@ data class Animal(
 
 @Composable
 fun LazyRowExample(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
     val animals = listOf(
         Animal("鴨子", R.drawable.animal0),
         Animal("企鵝", R.drawable.animal1),
@@ -160,7 +196,15 @@ fun LazyRowExample(modifier: Modifier = Modifier) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         // 直接傳入 animals 清單，每個迴圈拿到一個 animal 物件
-        items(animals) { animal ->
+        itemsIndexed(animals) { index, animal ->
+            Card(
+                modifier = Modifier.fillParentMaxWidth(0.5f)
+                    .height(260.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFFD0BCFF)
+                )
+            ){
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
@@ -170,12 +214,22 @@ fun LazyRowExample(modifier: Modifier = Modifier) {
                     painter = painterResource(id = animal.imageRes),
                     contentDescription = animal.name,
                     modifier = Modifier.size(150.dp)
+                        .clickable {
+                        // 點擊時跳出 Toast 訊息
+                        Toast.makeText(
+                            context,
+                            "這是 ${animal.name}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "${animal.name}"
+                    text = "$index${animal.name}"
                 )
             }
+        }
         }
     }
 }
