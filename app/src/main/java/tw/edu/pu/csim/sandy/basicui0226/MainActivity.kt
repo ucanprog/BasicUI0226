@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -12,12 +13,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -58,6 +62,8 @@ fun Main( modifier: Modifier = Modifier) {
     Box() {
         LazyColumnExample(modifier)
         ColumnExample(modifier)
+        TextFieldExample(modifier)
+        LazyRowExample(modifier)
 
     }
 
@@ -86,7 +92,7 @@ fun ColumnExample(modifier: Modifier = Modifier) {
     Column (
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0x8AE0BBE4))
+            .background(Color(0xffE0BBE4))
             .pointerInput(Unit) {
              detectTapGestures (
                  onTap = {msg = "短按"},
@@ -102,13 +108,13 @@ fun ColumnExample(modifier: Modifier = Modifier) {
         Text( msg )
 
         Spacer(modifier = Modifier.height(8.dp))
-        RowExample(modifier)
+        TextFieldExample(modifier)
 
     }
 }
 
 @Composable
-fun RowExample(modifier: Modifier = Modifier) {
+fun TextFieldExample(modifier: Modifier = Modifier) {
     Row {
         Image(
             painter = painterResource(id = R.drawable.android),
@@ -129,6 +135,52 @@ fun RowExample(modifier: Modifier = Modifier) {
         )
     }
 }
+data class Animal(
+    val name: String,
+    @DrawableRes val imageRes: Int
+)
+
+@Composable
+fun LazyRowExample(modifier: Modifier = Modifier) {
+    val animals = listOf(
+        Animal("鴨子", R.drawable.animal0),
+        Animal("企鵝", R.drawable.animal1),
+        Animal("青蛙", R.drawable.animal2),
+        Animal("貓頭鷹", R.drawable.animal3),
+        Animal("海豚", R.drawable.animal4),
+        Animal("牛", R.drawable.animal5),
+        Animal("無尾熊", R.drawable.animal6),
+        Animal("獅子", R.drawable.animal7),
+        Animal("狐狸", R.drawable.animal8),
+        Animal("小雞", R.drawable.animal9)
+    )
+
+    LazyRow(
+        modifier = Modifier.fillMaxHeight(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // 直接傳入 animals 清單，每個迴圈拿到一個 animal 物件
+        items(animals) { animal ->
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Image(
+                    painter = painterResource(id = animal.imageRes),
+                    contentDescription = animal.name,
+                    modifier = Modifier.size(150.dp)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "${animal.name}"
+                )
+            }
+        }
+    }
+}
+
+
 
 
 
