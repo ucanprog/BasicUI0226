@@ -218,7 +218,7 @@ fun LazyRowExample(modifier: Modifier = Modifier) {
                         // 點擊時跳出 Toast 訊息
                         Toast.makeText(
                             context,
-                            "這是 ${animal.name}",
+                            "您點選的是 ${animal.name}",
                             Toast.LENGTH_SHORT
                         ).show()
                     }
